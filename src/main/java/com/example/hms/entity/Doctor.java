@@ -9,6 +9,11 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class Doctor {
 
     @Id
@@ -27,9 +32,9 @@ public class Doctor {
 
     @Column(unique = true, length = 100)
     private String email;
-//    @ManyToMany(mappedBy = "doctors")
-//    private Set<Department> departments = new HashSet<>();
-//
-//    @OneToMany(mappedBy = "doctor")
-//    private List<Appointment> appointments = new ArrayList<>();
+    @ManyToMany(mappedBy = "doctors")
+    private Set<Department> departments = new HashSet<>();
+
+    @OneToMany(mappedBy = "doctor")
+    private List<Appointment> appointments = new ArrayList<>();
 }

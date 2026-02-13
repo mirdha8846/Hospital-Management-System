@@ -23,11 +23,11 @@ public class Department {
     @OneToOne
     private Doctor headDoctor;
 
-//    @ManyToMany
-//    @JoinTable(
-//            name = "my_dpt_doctors",
-//            joinColumns = @JoinColumn(name = "dpt_id"),
-//            inverseJoinColumns = @JoinColumn(name = "doctor_id")
-//    )
-//    private Set<Doctor> doctors = new HashSet<>();
+    @ManyToMany
+    @JoinTable(
+            name = "my_dpt_doctors",
+            joinColumns = @JoinColumn(name = "dpt_id"),
+            inverseJoinColumns = @JoinColumn(name = "doctor_id")
+    )
+    private Set<Doctor> doctors= new HashSet<>();
 }
