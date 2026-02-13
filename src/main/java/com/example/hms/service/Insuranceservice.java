@@ -1,11 +1,13 @@
 package com.example.hms.service;
 
+import com.example.hms.dto.PatientDto;
 import com.example.hms.entity.Insurance;
 import com.example.hms.entity.Patient;
 import com.example.hms.repo.Insurancerepo;
 import com.example.hms.repo.Patientrepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,18 +15,19 @@ import org.springframework.stereotype.Service;
 public class Insuranceservice {
 private final Insurancerepo insurancerepo;
 private final Patientrepo patientrepo;
+private final ModelMapper modelMapper;
 
 @Transactional
-    public Patient assignInsuranceToPatient(Insurance insurance,Long patientId){
+    public PatientDto assignInsuranceToPatient(Insurance insurance,Long patientId){
     Patient patient= patientrepo.findById(patientId).orElseThrow();
     patient.setInsurance(insurance);
-    return patient;
+    return modelMapper.map(patient,PatientDto.class);
 }
 
     @Transactional
-    public Patient disaccociateInsuranceFromPatient(Long patientId) {
+    public PatientDto disaccociateInsuranceFromPatient(Long patientId) {
         Patient patient= patientrepo.findById(patientId).orElseThrow();
         patient.setInsurance(null);
-        return patient;
+        return modelMapper.map(patient,PatientDto.class);
     }
 }
