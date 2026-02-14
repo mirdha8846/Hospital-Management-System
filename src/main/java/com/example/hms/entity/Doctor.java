@@ -14,6 +14,8 @@ import java.util.Set;
 @Setter
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Doctor {
 
     @Id

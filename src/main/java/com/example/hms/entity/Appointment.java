@@ -14,6 +14,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
+@Entity
 public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

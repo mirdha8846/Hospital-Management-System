@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class Patientservice {
-    private final Patient patient;
-    private final Doctor doctor;
+//    private final Patient patient;
+//    private final Doctor doctor;
     private final Patientrepo patientrepo;
     private final ModelMapper modelMapper;
 

@@ -20,7 +20,7 @@ public interface Patientrepo extends JpaRepository<Patient,Long> {
     Patient findByName(String name);
 
 
-    List<Patient> findByDateOrEmail(LocalDate birthDate,String email);
+    List<Patient> findByBirthDateOrEmail(LocalDate birthDate,String email);
 
 
     @Query("SELECT p from Patient p where p.bloodGroup=?1")
