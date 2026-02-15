@@ -12,6 +12,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@EnableMethodSecurity
 public class Appointmentservice {
     private final Appointmentrepo appointmentrepo;
     private final Patientrepo patientrepo;
@@ -50,7 +53,7 @@ public class Appointmentservice {
 
 
     @Transactional
-
+@PreAuthorize("hasAuthority('appointment:write') OR #doctorId==authentication.principal.id")
     public Appointment reAssignAppointmentToAnotherDoctor(Long appointmentId, Long doctorId) {
         Appointment appointment = appointmentrepo.findById(appointmentId).orElseThrow();
         Doctor doctor = doctorrepo.findById(doctorId).orElseThrow();
@@ -61,7 +64,8 @@ public class Appointmentservice {
         return appointment;
     }
 
-
+@Transactional
+@PreAuthorize("hasRole('ADMIN') OR (hasRole('DOCTOR') AND #doctorId==authentication.principal.id)")
     public List<AppointmentResponseDto> getAllAppointmentsOfDoctor(Long doctorId) {
         Doctor doctor = doctorrepo.findById(doctorId).orElseThrow();
 

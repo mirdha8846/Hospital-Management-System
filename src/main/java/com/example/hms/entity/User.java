@@ -2,9 +2,11 @@ package com.example.hms.entity;
 
 import com.example.hms.entity.type.Authprovidertype;
 import com.example.hms.entity.type.RoleType;
+import com.example.hms.security.RoleToPermissionMap;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -39,6 +41,16 @@ public class User implements UserDetails {
     Set<RoleType> roles = new HashSet<>();
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        Set<SimpleGrantedAuthority> authorities= new HashSet<>();
+        roles.forEach(
+                role->{
+                    Set<SimpleGrantedAuthority> permissions= RoleToPermissionMap.getAuthoritiesForRole(role);
+                    authorities.addAll(permissions);
+                    authorities.add(new SimpleGrantedAuthority("ROLE_"+role.name()));
+                }
+
+
+        );
+        return authorities;
     }
 }

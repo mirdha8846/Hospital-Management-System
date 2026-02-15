@@ -4,6 +4,7 @@ import com.example.hms.dto.DoctorDto;
 import com.example.hms.dto.NewDoctorRequestDto;
 import com.example.hms.entity.Doctor;
 import com.example.hms.entity.User;
+import com.example.hms.entity.type.RoleType;
 import com.example.hms.repo.Doctorrepo;
 import com.example.hms.repo.Userrepo;
 import jakarta.transaction.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +24,12 @@ private final Doctorrepo doctorrepo;
 private final Userrepo userrepo;
 private final ModelMapper modelMapper;
 
-public List<Doctor> getAllDoctors(){
-    return doctorrepo.findAll();
+public List<DoctorDto> getAllDoctors(){
+    return doctorrepo.findAll().stream().map((element) -> modelMapper.map(element, DoctorDto.class)).collect(Collectors.toList());
 }
+
+
+
 @Transactional
     public NewDoctorRequestDto onBoardNewDoctor(NewDoctorRequestDto newdoctor){
 
@@ -40,8 +45,8 @@ public List<Doctor> getAllDoctors(){
             .user(user)
             .build();
 
-    //this we do later
-//    user.getRoles().add(RoleType.DOCTOR);
+
+    user.getRoles().add(RoleType.DOCTOR);
 
     return modelMapper.map(doctorrepo.save(doctor), NewDoctorRequestDto.class);
 }

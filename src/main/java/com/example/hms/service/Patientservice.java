@@ -2,6 +2,7 @@ package com.example.hms.service;
 
 import com.example.hms.config.Appconfig;
 import com.example.hms.dto.PatientDto;
+import com.example.hms.dto.PatientResponseDto;
 import com.example.hms.entity.Doctor;
 import com.example.hms.entity.Patient;
 import com.example.hms.repo.Patientrepo;
@@ -25,15 +26,15 @@ public class Patientservice {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public PatientDto getPatientById(Long id){
+    public PatientResponseDto getPatientById(Long id){
         Patient patient1=patientrepo.findById(id).orElseThrow(()->new EntityNotFoundException("thhis is not out patient"));
-        return modelMapper.map(patient1,PatientDto.class);
+        return modelMapper.map(patient1,PatientResponseDto.class);
     }
     @Transactional
-    public List<PatientDto> getAllPatients(Integer pagenumber, Integer pagesize){
+    public List<PatientResponseDto> getAllPatients(Integer pagenumber, Integer pagesize){
         return patientrepo.findAllPatitent(PageRequest.of(pagenumber,pagesize))
                 .stream()
-                .map((p)->modelMapper.map(p,PatientDto.class)).collect(Collectors.toList());
+                .map((p)->modelMapper.map(p,PatientResponseDto.class)).collect(Collectors.toList());
 
 
     }
