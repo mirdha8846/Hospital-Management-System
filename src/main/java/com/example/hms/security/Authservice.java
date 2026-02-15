@@ -7,15 +7,21 @@ import com.example.hms.dto.SignupResponseDto;
 import com.example.hms.entity.Patient;
 import com.example.hms.entity.User;
 import com.example.hms.entity.type.Authprovidertype;
+import com.example.hms.entity.type.RoleType;
 import com.example.hms.repo.Patientrepo;
 import com.example.hms.repo.Userrepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +32,7 @@ public class Authservice {
     private final Userrepo userrepo;
     private final Patientrepo patientrepo;
     private final PasswordEncoder passwordEncoder;
+    private final Authprovidertype authprovidertype;
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto){
         Authentication authentication= authenticationManager.authenticate(
@@ -70,4 +77,34 @@ public class Authservice {
 
         return user;
     }
-}
+
+    public ResponseEntity<LoginResponseDto> oAuth2login(OAuth2User oAuth2User, String registrationId) {
+        Authprovidertype providerType = authutil.getProviderTypeFromRegistrationId(registrationId);
+        String providerId = authutil.determineProviderIdFromOAuth2User(oAuth2User, registrationId);
+
+        User user = userrepo.findByProviderIdAndProviderType(providerId, providerType).orElse(null);
+        String email = oAuth2User.getAttribute("email");
+        String name = oAuth2User.getAttribute("name");
+
+        User emailUser = userrepo.findByUsernam(email).orElse(null);
+
+        if(user == null && emailUser == null) {
+            // signup flow:
+            String username = authutil.determineUsernameFromOAuth2User(oAuth2User, registrationId, providerId);
+            user = signUpInternal(new SignUpRequestDto(username, null, name, Set.of(RoleType.PATIENT)),
+                    authprovidertype, providerId);
+        } else if(user != null) {
+            if(email != null && !email.isBlank() && !email.equals(user.getUsername())) {
+                user.setUsername(email);
+                userrepo.save(user);
+            }
+        } else {
+            throw new BadCredentialsException("This email is already registered with provider "+emailUser.getProviderType());
+        }
+
+        LoginResponseDto loginResponseDto = new LoginResponseDto(authutil.generateAccessToken(user), user.getId());
+        return ResponseEntity.ok(loginResponseDto);
+    }
+
+    }
+

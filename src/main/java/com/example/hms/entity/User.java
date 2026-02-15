@@ -18,7 +18,9 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @Builder
-@Table(name = "app_user")
+@Table(name = "app_user",indexes = {
+        @Index(name = "idx_providerId_providerType",columnList = "providerId,providerType")
+})
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
